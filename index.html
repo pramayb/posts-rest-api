@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Posts and Comments</title>
+<style>
+	table {
+		border-collapse: collapse;
+		width: 100%;
+	}
+	
+	th, td {
+		padding: 5px;
+		text-align: left;
+		border-bottom: 1px solid #ddd;
+	}
+
+	td {
+		vertical-align: top;
+	}
+	
+	th {
+		padding-top: 12px;
+		padding-bottom: 12px;
+		background-color: #D3D3D3;
+		color: black;
+	}
+	
+	tr:hover {
+		background-color: #f5f5f5;
+	}
+</style>
+
+<script
+	src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+<script type="text/javascript">
+	var app = angular.module('postRESTApp', []);
+
+	app.controller('servicePosts', function($scope, $http) {
+		$http({
+			method : 'GET',
+			url : 'http://localhost:8080/posts'
+		}).then(function success(response) {
+			//success callback
+			$scope.posts = response.data;
+			console.log(response.data);
+		}, function error(response) {
+		});
+	});
+
+	app.factory(
+					"commentsProviderService",
+					[
+							"$http",
+							function($http) {
+								return {
+									getTeamDetailsById : function(postId) {
+										console.log(postId);
+										return $http
+												.get('http://localhost:8080/post/'
+														+ postId + '/comments')
+									}
+								};
+							} ]);
+
+	app.controller('serviceComments', function($scope, $http, commentsProviderService) {
+		$scope.commentUrl = '1';
+		$scope.init = function(id) {
+			commentsProviderService.getTeamDetailsById(id).then(function(response) {
+				//success callback
+				$scope.comments = response.data;
+			}, function(response) {
+				//an error has occurred
+			});
+		}
+
+	});
+</script>
+</head>
+<body>
+	<div ng-app="postRESTApp">
+		<table  ng-controller="servicePosts">
+			<tr>
+				<th>No.</th>
+				<th>Post</th>
+				<th>Comments</th>
+			</tr>
+			<tr>{{ $scope.posts }}</tr>
+			<tr ng-repeat="post in posts">
+				<td>{{ $index + 1 }}.</td>
+				<td><b>{{ post.title }}</b>
+				<p>{{ post.body }}</p>
+				</td>
+				<td>
+					<table ng-controller="serviceComments" ng-init="init(post.id)">
+						<tr ng-repeat="comment in comments">
+							<td>{{ $index + 1 }}. {{ comment.body }}</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
+	</div>
+</body>
+</html>

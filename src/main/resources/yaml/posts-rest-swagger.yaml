@@ -1,0 +1,93 @@
+openapi: 3.0.0
+info:
+  description: Post and Comment REST Service
+  version: 1.0.0
+  title: REST API for posts and comments
+  contact:
+    email: pramay.nz@gmail.works
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+tags:
+  - name: rest api
+    description: REST API's for Posts and its comments
+paths:
+  "/posts":
+    get:
+      tags:
+        - list all posts
+      summary: Returns all available posts
+      operationId: getPosts
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponsePosts"
+  "/post/{postId}/comments":
+    get:
+      tags:
+        - list all comments
+      summary: Returns all available comments within the post
+      operationId: getComments
+      parameters:
+        - name: postId
+          in: path
+          description: ID of post published
+          required: true
+          example: 
+            1
+          schema:
+            type: int
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseComments"
+
+components:
+  schemas:
+    ResponsePosts:
+      type: array
+      items:
+        $ref: '#/components/schemas/Post'
+    ResponseComments:
+      type: array
+      items:
+        $ref: '#/components/schemas/Comment'
+    Post:
+      type: object
+      properties:
+        id:
+          type: int
+          example: 1
+        userId:
+          type: int
+          example: 1
+        title:
+          type: string
+          example: sunt aut facere repellat provident occaecati excepturi optio reprehenderit
+        body:
+          type: string
+          example: quia et suscipit ..
+    Comment:
+      type: object
+      properties:
+        id:
+          type: int
+          example: 1
+        postId:
+          type: int
+          example: 1
+        name:
+          type: string
+          example: id labore ex et quam laborum
+        email:
+          type: string
+          example: Eliseo@gardner.biz
+        body:
+          type: string
+          example: laudantium enim quasi est quidem magnam voluptate ipsam ..
